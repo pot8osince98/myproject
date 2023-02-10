@@ -1,0 +1,93 @@
+{% extends "projects_base.html" %}
+
+{%block title%}Iris{% endblock %}
+
+{% block blog %}
+
+<p>The first project is using perhaps the best known dataset in pattern recognition. The dataset contains 3 classes of 50 instances each, where each refers to a type of iris plant.</p>
+
+<img src="{{url_for('static',filename='iris/countplot.png')}}" class="img-fluid">
+
+<p>
+    The dataset has four features:
+    <ul>
+        <li>Sepal Length</li>
+        <li>Sepal Width</li>
+        <li>Petal Length</li>
+        <li>Petal Width</li>
+    </ul>
+</p>
+
+<table class="table table-striped my-5">  <thead>    <tr>      <th></th>      <th>sepal_length</th>      <th>sepal_width</th>      <th>petal_length</th>      <th>petal_width</th>      <th>species</th>    </tr>  </thead>  <tbody>    <tr>      <th>0</th>      <td>5.1</td>      <td>3.5</td>      <td>1.4</td>      <td>0.2</td>      <td>setosa</td>    </tr>    <tr>      <th>1</th>      <td>4.9</td>      <td>3.0</td>      <td>1.4</td>      <td>0.2</td>      <td>setosa</td>    </tr>    <tr>      <th>2</th>      <td>4.7</td>      <td>3.2</td>      <td>1.3</td>      <td>0.2</td>      <td>setosa</td>    </tr>    <tr>      <th>3</th>      <td>4.6</td>      <td>3.1</td>      <td>1.5</td>      <td>0.2</td>      <td>setosa</td>    </tr>    <tr>      <th>4</th>      <td>5.0</td>      <td>3.6</td>      <td>1.4</td>      <td>0.2</td>      <td>setosa</td>    </tr>  </tbody></table>
+
+<p>The following figure shows how each attribute is related to the others for each class.</p>
+
+<img src="{{url_for('static',filename='iris/pairplot.png')}}" class="img-fluid my-5">
+
+<p>One of the classes is linearly separable from the other two; the latter are not linearly separable from each other.</p>
+
+<p>
+    The following model families were trained and tested on this dataset:
+    <ul>
+        <li>Decision Tree</li>
+        <li>Random Forest</li>
+        <li>Logistic Regression</li>
+        <li>K Neighbors</li>
+        <li>Support Vector Machine</li>
+        <li>Artificial Neural Network</li>
+    </ul>
+</p>
+
+<p>A simple report() method was also created to quickly evaluate each model.</p>
+
+<pre><code>
+def report(model,X_train,y_train,X_test,y_test):
+    model.fit(X_train,y_train)
+    preds = model.predict(X_test)
+    print(classification_report(y_test,preds))
+    ConfusionMatrixDisplay.from_predictions(y_test,preds)
+</code></pre>
+
+<br>
+
+<p>All models yielded an accuracy greater than 90%, but the most accurate model was the logistic regression model which accurately identified 98% of the test data. Below is the cofusion matrix for the logistic regression model based on the test data.</p>
+
+<img src="{{url_for('static',filename='iris/confusionmatrix.png')}}" class="img-fluid my-5">
+
+<p>It is evident that the model identified the linearly separable class of setosa with 100% percent accuracy. The model was able to distinguish the two non-linearly separable classes with 97% accuracy.</p>
+
+<p>To see the model in action, fill out the form on the right and check out the prediction.</p>
+
+
+{% endblock %}
+
+{% block form %}
+<form method="POST">
+    {{form.hidden_tag()}}
+    <div class="mb-3">
+        {{form.sep_len.label(class='form-label')}}
+        {{form.sep_len(class='form-control')}}
+    </div>
+    <div class="mb-3">
+        {{form.sep_wid.label(class='form-label')}}
+        {{form.sep_wid(class='form-control')}}
+    </div>
+    <div class="mb-3">
+        {{form.pet_len.label(class='form-label')}}
+        {{form.pet_len(class='form-control')}}
+    </div>
+    <div class="mb-3">
+        {{form.pet_wid.label(class='form-label')}}
+        {{form.pet_wid(class='form-control')}}
+    </div>
+        {{form.submit(class='btn btn-primary')}}
+</form>
+
+{% for mess in get_flashed_messages() %}
+<div class="alert alert-primary alert-dismissible fade show mt-3" role="alert">
+  <strong> {{ mess }} </strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+{% endblock %}

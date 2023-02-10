@@ -1,0 +1,98 @@
+{% extends "projects_base.html" %}
+
+{%  block title %}
+Home Price Predictor
+{% endblock %}
+
+{% block blog %}
+
+<p>This project used the Ames Housing <a href="https://www.kaggle.com/datasets/prevek18/ames-housing-dataset" target="_blank" rel="noopener noreferrer">dataset</a> which includes 80 features describing a wide range of characteristics of 2930 homes and their sale price. The objective of this project is to predict the sale price of a home using these features.</p>
+
+<table class="table table-striped my-5">   <thead>     <tr>       <th></th>       <th>PID</th>       <th>MS SubClass</th>       <th>...</th>       <th>Sale Condition</th>       <th>SalePrice</th>     </tr>   </thead>   <tbody>     <tr>       <th>0</th>       <td>526301100</td>       <td>20</td>       <td>...</td>       <td>Normal</td>       <td>215000</td>     </tr>     <tr>       <th>1</th>       <td>526350040</td>       <td>20</td>       <td>...</td>       <td>Normal</td>       <td>105000</td>     </tr>     <tr>       <th>2</th>       <td>526351010</td>       <td>20</td>       <td>...</td>       <td>Normal</td>       <td>172000</td>     </tr>     <tr>       <th>3</th>       <td>526353030</td>       <td>20</td>       <td>...</td>       <td>Normal</td>       <td>244000</td>     </tr>     <tr>       <th>4</th>       <td>527105010</td>       <td>60</td>       <td>...</td>       <td>Normal</td>       <td>189900</td>     </tr>   </tbody> </table>
+
+<p>The following image shows the distribution of the target variable: Sale Price</p>
+
+<img src="{{url_for('static',filename='home_price_predictor/SalePriceHistogram.png')}}" class="img-fluid">
+
+<p>The following figure shows the correlations between the sale price and the numerical features.</p>
+
+<img src="{{url_for('static',filename='home_price_predictor/SalePriceCorrelation.png')}}" class="img-fluid">
+
+<p>Overall Quality, which is a value assigned by a human, is most highly correlated to the sale price. Thus, human input is an important aspect of determining the price.</p>
+
+<p>As can be seen in the next figure, as the overall quality goes up, so does the sale price, barring some outliers.</p>
+
+<img src="{{url_for('static',filename='home_price_predictor/SalePriceVsOverallQual.png')}}" class="img-fluid">
+
+<p>The next most highly correlated feature is the living area. The following figure shows the relationship between the feature and the sale price. </p>
+
+<img src="{{url_for('static',filename='home_price_predictor/SalePriceVsGrLivArea.png')}}" class="img-fluid">
+
+<p>There are three points marked which are obvious outliers. They are dropped from the dataset to prevent the model from being skewed by those points. The following figure shows the same relationship but without the outliers.</p>
+
+<img src="{{url_for('static',filename='home_price_predictor/SalePriceVsGrLivAreaOutliersRemoved.png')}}" class="img-fluid">
+
+<p>Next, the following simple method was created to evaluate the missing values.</p>
+
+<pre><code>
+def percent_missing(df):
+    percent_nan = (df.isna().sum()/len(df))*100
+    percent_nan = percent_nan[percent_nan>0].sort_values()
+    return percent_nan
+</code></pre>
+
+<br>
+
+<p>The method returns the columns that have missing values and the percentage missing. The following figure shows what proportion of a feature is missing values.</p>
+
+<img src="{{url_for('static',filename='home_price_predictor/PercentMissing.png')}}" class="img-fluid">
+
+<p>The next figure shows the same plot but zoomed in on the y axis to see the features missing minimal values.</p>
+
+<img src="{{url_for('static',filename='home_price_predictor/PercentMissingZoomed.png')}}" class="img-fluid">
+
+<p>Based on the dataset documentation, most of these missing values were replaced with “None” or “0” for qualitative and quantitative features respectively. However, features missing over 80% of the data were dropped altogether. The missing values for lot frontage were filled by the mean lot frontage of the neighborhood where the house was located.</p>
+
+<p>Next, the features were separated into qualitative and quantitative subgroups, and dummy variables were created for the qualitative features as the models cannot process non-numeric columns. Then, the dummy variables were concatenated with the original quantitative columns, ready for the machine learning models.</p>
+
+<p>
+    The following model families were trained and tested on this dataset:
+    <ul>
+        <li>Linear Regression</li>
+        <li>Random Forest</li>
+        <li>Artificial Neural Network</li>
+    </ul>
+</p>
+
+<p>All models performed similarly: about $15,000 mean absolute error and $20,000 root mean squared error. The mean sale price was about $180,000 with a standard deviation of $80,000. Thus, the model was able to predict with an error of less than 0.25 stds.</p>
+
+{% endblock %}
+
+{% block form %}
+<form>
+  <fieldset disabled>
+    <div class="mb-3">
+      <label for="disabledTextInput" class="form-label">Disabled input</label>
+      <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input">
+    </div>
+    <div class="mb-3">
+      <label for="disabledSelect" class="form-label">Disabled select menu</label>
+      <select id="disabledSelect" class="form-select">
+        <option>Disabled select</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
+        <label class="form-check-label" for="disabledFieldsetCheck">
+          Can't check this
+        </label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="mt-3">
+        <p class="form-label">Unfortunately, this project does not a have a form as the data has 79 features that are used to predict the sale price.</p>
+    </div>
+  </fieldset>
+</form>
+{% endblock %}

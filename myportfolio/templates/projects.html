@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title%}
+Projects
+{% endblock %}
+
+{% block content%}
+<div class="py-5 bg-light">
+    <div class="container"  style="max-width: 1000px;">
+        <div class="card mb-3 mx-3">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img src="{{url_for('static',filename='iris/iris.jpg')}}" class="img-fluid rounded-start">
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{url_for('projects.iris')}}" class="text-black">Iris</a>
+                </h5>
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card mb-3 mx-3">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img src="{{url_for('static',filename='credit_card/credit_card.jpg')}}" class="img-fluid rounded-start">
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{url_for('projects.credit_card_fraud_detection')}}" class="text-black">Credit Card Fraud Detection</a>
+                </h5>
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card mb-3 mx-3">
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img src="{{url_for('static',filename='home_price_predictor/home_price_predictor.jpg')}}" class="img-fluid rounded-start">
+            </div>
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{url_for('projects.home_price_predictor')}}" class="text-black">Home Price Predictor</a>
+                </h5>
+                <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

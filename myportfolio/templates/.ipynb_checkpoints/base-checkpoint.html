@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <!-- CSS only -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        <!-- JavaScript Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title%}{% endblock %}</title>
+    </head>
+    <body>
+        <header>
+  <div class="collapse bg-dark" id="navbarHeader">
+    <div class="container"  style="max-width: 1000px;">
+      <div class="row">
+        <div class="col-sm-8 col-md-7 py-4">
+          <h4 class="text-white">About</h4>
+          <p class="text-muted">This is a portfolio project website to present my data science projects. I am an aspiring data scientist and recent graduate of Kennesaw State University with a double BS in Applied Mathematics and Physics, and a minor in Computer Science.</p>
+        </div>
+        <div class="col-sm-4 offset-md-1 py-4">
+          <h4 class="text-white">Contact</h4>
+          <ul class="list-unstyled">
+            <li><a href="https://www.linkedin.com/in/taha-keen-932159203/" target="_blank" rel="noopener noreferrer" class="text-white">LinkedIn</a></li>
+            <li><a href="https://github.com/pot8osince98" target="_blank" rel="noopener noreferrer" class="text-white">GitHub</a></li>
+            <li><a href="mailto:tzkeen@hotmail.com" target="_blank" rel="noopener noreferrer" class="text-white">Email me</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container"  style="max-width: 1000px;">
+      <a href="{{url_for('core.index')}}" class="navbar-brand d-flex align-items-center">
+        <strong>Pot8oSince98</strong>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </div>
+</header>
+        {% block content%}
+            
+        {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,88 @@
+{% extends "projects_base.html" %}
+
+{%  block title %}
+Credit Card Fraud Detection
+{% endblock %}
+
+{% block blog %}
+
+<p>It is important for credit card companies to recognize fraudulent credit card transactions so that the customers are charged for itmes that they did not purchase. This <a href="https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud" target="_blank" rel="noopener noreferrer">dataset</a> contains transactions made by credit cards in September 2013 by European cardholders. This dataset presents transactions that occurred in two days, where we have 492 frauds out of 284,807 transactions.</p>
+
+<img src="{{url_for('static',filename='credit_card/countplot.png')}}" class="img-fluid">
+
+<p>The dataset is highly unbalanced, the positive class (frauds) account for 0.172% of all transactions. It contains only numerical input variables which are the result of a PCA transformation. Unfortunately, due to confidentiality issues, the original features and more background information about the data is not available. Features V1, V2, … V28 are the principal components obtained with PCA, the only features which have not been transformed with PCA are 'Time' and 'Amount'.</p>
+
+<img src="{{url_for('static',filename='credit_card/distribution.png')}}" class="img-fluid">
+
+<p>Feature 'Time' contains the seconds elapsed between each transaction and the first transaction in the dataset. I drop this feature as it merely shows the order of transactions. The feature 'Amount' is the transaction Amount. Feature 'Class' is the response variable and it takes value 1 in case of fraud and 0 otherwise.</p>
+
+<table class="table table-striped my-5">  <thead>    <tr>      <th></th>      <th>V1</th>      <th>V2</th>      <th>...</th>      <th>V28</th>      <th>Amount</th>      <th>Class</th>    </tr>  </thead>  <tbody>    <tr>      <th>0</th>      <td>-1.359807</td>      <td>-0.072781</td>      <td>...</td>      <td>-0.021053</td>      <td>149.62</td>      <td>0</td>    </tr>    <tr>      <th>1</th>      <td>1.191857</td>      <td>0.266151</td>      <td>...</td>      <td>0.014724</td>      <td>2.69</td>      <td>0</td>    </tr>    <tr>      <th>2</th>      <td>-1.358354</td>      <td>-1.340163</td>      <td>...</td>      <td>-0.059752</td>      <td>378.66</td>      <td>0</td>    </tr>    <tr>      <th>3</th>      <td>-0.966272</td>      <td>-0.185226</td>      <td>...</td>      <td>0.061458</td>      <td>123.50</td>      <td>0</td>    </tr>    <tr>      <th>4</th>      <td>-1.158233</td>      <td>0.877737</td>      <td>...</td>      <td>0.215153</td>      <td>69.99</td>      <td>0</td>    </tr>  </tbody></table>
+
+<p>To start off, I do a t-test for means of the two classes for each feature. 26 features have a p-value less than 0.05 suggesting there is a significant difference in the means of the two classes for those features. Since the distribution is normal with a significantly different mean, the data should be linearly separable.</p>
+
+<p>
+    The following model families were trained and tested on this dataset:
+    <ul>
+        <li>Decision Tree</li>
+        <li>Logistic Regression</li>
+        <li>K Neighbors</li>
+        <li>Artificial Neural Network</li>
+    </ul>
+</p>
+
+<p>The following ANN model yielded the best results on the test set.
+
+<pre> 
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ dense_15 (Dense)            (None, 29)                870       
+                                                                 
+ dense_16 (Dense)            (None, 64)                1920      
+                                                                 
+ dense_17 (Dense)            (None, 32)                2080      
+                                                                 
+ dense_18 (Dense)            (None, 1)                 33        
+                                                                 
+=================================================================
+Total params: 4,903
+Trainable params: 4,903
+Non-trainable params: 0
+_________________________________________________________________</pre></p>
+
+<p>The most important metric for this classification task was the recall of the fraudulent class. Another benefit of using the ANN model is that it returns the probability of a transaction belonging to the fraudulent class. Hence, I chose a low threshold of only 10% to predict a transaction as fraud to minimize the number of missed fraudulent transactions at the cost of incorrectly predicting a few more legitimate transactions. Below is the cofusion matrix for the model based on the test data.</p>
+
+<img src="{{url_for('static',filename='credit_card/confusionmatrix.png')}}" class="img-fluid my-5">
+
+<p>As evident from the confusion matrix, the model correctly catches over 85% of fraudulent transactions. Upon further examiantion of the missed fraudulent transactions, I found out that the means of most features for those transactions were not significantly different from the mean of the legitimate transactions. That could be a reason why the model failed to correctly identify those transactions as frauds. Unfortunately, since almost all the features of this data are principal components, it's difficult to conclude what that means in terms of the features and how to improve the model from that information.</p>
+
+{% endblock %}
+
+{% block form %}
+<form>
+  <fieldset disabled>
+    <div class="mb-3">
+      <label for="disabledTextInput" class="form-label">Disabled input</label>
+      <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input">
+    </div>
+    <div class="mb-3">
+      <label for="disabledSelect" class="form-label">Disabled select menu</label>
+      <select id="disabledSelect" class="form-select">
+        <option>Disabled select</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
+        <label class="form-check-label" for="disabledFieldsetCheck">
+          Can't check this
+        </label>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="mt-3">
+        <p class="form-label">Unfortunately, this project does not a have a form as most of the features are principal components obtained with PCA to preserve confidentiality.</p>
+    </div>
+  </fieldset>
+</form>
+{% endblock %}
