@@ -9,9 +9,9 @@ def iris_predict(flower_example):
     
     flower = [[sep_len,sep_wid,pet_len,pet_wid]]
     
-    scaler = joblib.load("iris_scaler.pkl")
+    scaler = joblib.load("myportfolio/projects/iris_scaler.pkl")
     
-    model = joblib.load("iris_model.pkl")
+    model = joblib.load("myportfolio/projects/iris_model.pkl")
     
     flower = scaler.transform(flower)
     
