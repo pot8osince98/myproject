@@ -1,4 +1,4 @@
-import joblib
+import joblib,os
 
 def iris_predict(flower_example):
     
@@ -9,9 +9,11 @@ def iris_predict(flower_example):
     
     flower = [[sep_len,sep_wid,pet_len,pet_wid]]
     
-    scaler = joblib.load("myportfolio/projects/iris_scaler.pkl")
+    location = os.path.dirname(os.path.realpath(__file__))
     
-    model = joblib.load("myportfolio/projects/iris_model.pkl")
+    scaler = joblib.load(os.path.join(location, 'iris_scaler.pkl'))
+    
+    model = joblib.load(os.path.join(location, 'iris_model.pkl'))
     
     flower = scaler.transform(flower)
     
