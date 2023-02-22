@@ -39,3 +39,7 @@ def iris():
 @projects.route('/home_price_predictor')
 def home_price_predictor():
     return render_template('home_price_predictor.html')
+
+@projects.route('/stocks_dash')
+def stocks_dash():
+    return render_template('stocks_dash.html')
