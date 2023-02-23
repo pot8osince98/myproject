@@ -1,4 +1,7 @@
-import joblib,os
+import joblib,os,json,plotly
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objs as go
 
 def iris_predict(flower_example):
     
@@ -20,3 +23,23 @@ def iris_predict(flower_example):
     iris_class = model.predict(flower)[0].title()
     
     return iris_class
+
+def create_plot(df):
+    
+    fig = {'data':[{'x':df.index,'y':df['Adj Close']}]}
+
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
+def create_base_plot():
+    df = pd.DataFrame({
+      'Fruit': ['Apples', 'Oranges', 'Bananas', 'Apples', 'Oranges', 
+      'Bananas'],
+      'Amount': [4, 1, 2, 2, 4, 5],
+      'City': ['SF', 'SF', 'SF', 'Montreal', 'Montreal', 'Montreal']
+    })
+    fig = px.bar(df, x='Fruit', y='Amount', color='City', 
+      barmode='group')
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    return graphJSON

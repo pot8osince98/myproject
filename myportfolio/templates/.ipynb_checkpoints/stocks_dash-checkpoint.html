@@ -18,33 +18,33 @@ Proin rhoncus nisi neque, sit amet pharetra sem varius eget. Curabitur tincidunt
 Proin cursus dapibus felis eu vestibulum. Aenean ornare ornare lorem aliquam placerat. Proin ac imperdiet nulla, sed rhoncus dolor. Nam fermentum semper mollis. Cras sit amet tempus turpis, tristique tempor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In pretium neque sit amet ante dignissim porta. Vestibulum congue, lacus nec aliquam vulputate, ligula dui posuere orci, efficitur congue ligula mauris a turpis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Mauris vulputate ultrices arcu id pulvinar. Etiam posuere ultrices diam vel consectetur. Fusce ac vehicula dolor. Ut hendrerit dui libero, ut ultricies nisl tincidunt et.
 </p>
 
+<div id='chart' class='chart'”>
+    <script type='text/javascript'>
+      var graphs = {{plot | safe}};
+      Plotly.plot('chart',graphs,{});
+    </script>
+</div>
+
 {% endblock %}
 
 {% block form %}
-<form>
-  <fieldset disabled>
+<form method="POST">
+    {{form.hidden_tag()}}
     <div class="mb-3">
-      <label for="disabledTextInput" class="form-label">Disabled input</label>
-      <input type="text" id="disabledTextInput" class="form-control" placeholder="Disabled input">
-    </div>
-    <div class="mb-3">
-      <label for="disabledSelect" class="form-label">Disabled select menu</label>
-      <select id="disabledSelect" class="form-select">
-        <option>Disabled select</option>
-      </select>
+        <select name="stock" class="form-select">
+            {% for tic,name in options %}
+                <option value={{tic}}>{{name}}</option>
+            {% endfor %}
+        </select>
     </div>
     <div class="mb-3">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="disabledFieldsetCheck" disabled>
-        <label class="form-check-label" for="disabledFieldsetCheck">
-          Can't check this
-        </label>
-      </div>
+        {{form.start_date.label(class='form-label')}}
+        {{form.start_date(class='form-control')}}
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-    <div class="mt-3">
-        <p class="form-label">Unfortunately, this project does not a have a form as most of the features are principal components obtained with PCA to preserve confidentiality.</p>
+    <div class="mb-3">
+        {{form.end_date.label(class='form-label')}}
+        {{form.end_date(class='form-control')}}
     </div>
-  </fieldset>
+        {{form.submit(class='btn btn-primary')}}
 </form>
 {% endblock %}

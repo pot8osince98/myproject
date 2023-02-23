@@ -1,6 +1,9 @@
 # myportfolio/projects/views.py
 
 from flask import render_template,url_for,request,redirect,Blueprint,flash,session
+import pandas as pd
+import os
+import yfinance as yf
 
 projects = Blueprint('projects',__name__)
 
@@ -40,6 +43,20 @@ def iris():
 def home_price_predictor():
     return render_template('home_price_predictor.html')
 
-@projects.route('/stocks_dash')
+from myportfolio.projects.forms import dash_form
+from myportfolio.projects.models import create_plot
+from myportfolio.projects.models import create_base_plot
+
+@projects.route('/stocks_dash',methods=['GET','POST'])
 def stocks_dash():
-    return render_template('stocks_dash.html')
+    location = os.path.dirname(os.path.realpath(__file__))
+    file_path = location+'/Data/NASDAQcompanylist.csv'
+    nsdq = pd.read_csv(file_path)
+    options = zip(nsdq['Symbol'],nsdq['Name'])
+    form = dash_form()
+    plot = create_base_plot()
+    if form.validate_on_submit():
+        stock = request.form.get('stock')
+        df = yf.download(stock,'2000-01-01','2023-01-01')
+        plot = create_plot(df)
+    return render_template('stocks_dash.html',plot=plot,form=form,options=options)
