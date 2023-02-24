@@ -24,22 +24,32 @@ def iris_predict(flower_example):
     
     return iris_class
 
-def create_plot(df):
+def create_plot(stocks):
     
-    fig = {'data':[{'x':df.index,'y':df['Adj Close']}]}
+    traces =[]
+    
+    for tic, df in stocks.items():
+        traces.append(go.Scatter(x=df.index,y=df['Adj Close'],mode='lines',name=tic))
+    
+    layout = go.Layout(template='ggplot2')
+    
+    fig = go.Figure(data=traces,layout=layout)
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     return graphJSON
 
-def create_base_plot():
-    df = pd.DataFrame({
-      'Fruit': ['Apples', 'Oranges', 'Bananas', 'Apples', 'Oranges', 
-      'Bananas'],
-      'Amount': [4, 1, 2, 2, 4, 5],
-      'City': ['SF', 'SF', 'SF', 'Montreal', 'Montreal', 'Montreal']
-    })
-    fig = px.bar(df, x='Fruit', y='Amount', color='City', 
-      barmode='group')
+def create_hist(stocks):
+    
+    fig = go.Figure()
+    
+    for tic, df in stocks.items():
+        fig.add_trace(go.Histogram(x=df['Daily Returns'],name=tic,
+                                   xbins=dict(start=-0.2,end=0.2,size=0.005)))
+    
+    fig.update_layout(title='Daily Returns',barmode='overlay',template='ggplot2')
+    fig.update_traces(opacity=0.3)
+    
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
     return graphJSON
