@@ -51,7 +51,7 @@ def stocks_dash():
     stocks = {}
     
     for tic in tickers:
-        df = yf.download(tic,'2000-01-01','2023-01-01')
+        df = yf.download(tic)
         df['Daily Returns'] = df['Adj Close'].pct_change()
         df.dropna(inplace=True)
         stocks[tic] = df
