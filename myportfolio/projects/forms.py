@@ -13,9 +13,9 @@ class iris_form(FlaskForm):
 
 class dash_form(FlaskForm):
     location = os.path.dirname(os.path.realpath(__file__))
-    file_path = location+'/Data/NASDAQcompanylist.csv'
-    nsdq = pd.read_csv(file_path)
-    options = list(zip(nsdq['Symbol'],nsdq['Name']))
+    file_path = location+'/Data/companies.csv'
+    stocks = pd.read_csv(file_path)
+    options = list(zip(stocks['Symbol'],stocks['Name']))
     
     tickers = SelectMultipleField("Enter Stock Symbol",choices=options,default=['AAPL'])
     start_date = DateField("Start Date")
