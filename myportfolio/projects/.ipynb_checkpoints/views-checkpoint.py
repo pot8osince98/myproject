@@ -42,7 +42,7 @@ def home_price_predictor():
     return render_template('home_price_predictor.html')
 
 from myportfolio.projects.forms import dash_form
-from myportfolio.projects.models import create_plot,create_hist
+from myportfolio.projects.models import create_plot,create_hist,create_bar
 
 @projects.route('/stocks_dash',methods=['GET','POST'])
 def stocks_dash():
@@ -58,4 +58,5 @@ def stocks_dash():
     
     plot = create_plot(stocks)
     hist = create_hist(stocks)
-    return render_template('stocks_dash.html',plot=plot,form=form,hist=hist)
+    bar = create_bar(stocks)
+    return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar)

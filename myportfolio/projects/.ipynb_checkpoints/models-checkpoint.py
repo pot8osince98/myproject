@@ -1,4 +1,5 @@
 import joblib,os,json,plotly
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
@@ -49,6 +50,29 @@ def create_hist(stocks):
     
     fig.update_layout(title='Daily Returns',barmode='overlay',template='ggplot2')
     fig.update_traces(opacity=0.3)
+    
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
+def create_bar(stocks):
+    
+    data = []
+    
+    for tic, df in stocks.items():
+        pct_change = round(100*(df.loc['2023-01-03']['Adj Close']-df.loc['2021-01-04']['Adj Close'])/df.loc['2021-01-04']['Adj Close'],2)
+        data.append([tic,pct_change])
+    
+    df = pd.DataFrame(data=data,columns=['Symbol','Pct Change'])
+    
+    df['Color'] = np.where(df['Pct Change']<0,'red','green')
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(x=df['Pct Change'],y=df['Symbol'],marker_color=df['Color'],orientation='h',
+                         text=df['Pct Change'],textposition='auto'))
+    
+    fig.update_layout(barmode='stack',template='ggplot2')
     
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 

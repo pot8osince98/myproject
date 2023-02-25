@@ -20,6 +20,13 @@ Stocks Dashboard
     </script>
 </div>
 
+<div id='bar' class='chart'>
+    <script type='text/javascript'>
+      var graphs = {{bar | safe}};
+      Plotly.plot('bar',graphs,{});
+    </script>
+</div>
+
 {% endblock %}
 
 {% block form %}
@@ -27,7 +34,7 @@ Stocks Dashboard
     {{form.hidden_tag()}}
     <div class="mb-3">
         {{form.tickers.label(class='form-label')}}
-        {{form.tickers(class='form-control')}}
+        {{form.tickers(class='form-select')}}
     </div>
     <div class="mb-3">
         {{form.start_date.label(class='form-label')}}
@@ -39,4 +46,13 @@ Stocks Dashboard
     </div>
         {{form.submit(class='btn btn-primary')}}
 </form>
+
+<script>
+$(document).ready(function() {
+    $("#tickers").select2({
+        theme: "bootstrap-5"
+    });
+});
+</script>
+
 {% endblock %}
