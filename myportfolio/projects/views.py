@@ -2,6 +2,7 @@
 
 from flask import render_template,url_for,request,redirect,Blueprint,flash,session
 import yfinance as yf
+import pandas as pd
 
 projects = Blueprint('projects',__name__)
 
@@ -49,7 +50,13 @@ def stocks_dash():
     form = dash_form()
     tickers = form.tickers.data
     start = form.start_date.data
+    start = pd.Timestamp(start)
+    
+    if not form.validate():
+        form.end_date.data = form.end_date.default
+    
     end = form.end_date.data
+    end = pd.Timestamp(end)
     
     stocks = {}
     

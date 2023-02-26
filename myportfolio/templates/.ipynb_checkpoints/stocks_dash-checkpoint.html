@@ -43,6 +43,11 @@ Stocks Dashboard
     <div class="mb-3">
         {{form.end_date.label(class='form-label')}}
         {{form.end_date(class='form-control')}}
+        {% if form.end_date.errors %}
+        <div class="text-danger">
+            {{ form.end_date.errors[0] }}
+        </div>
+        {% endif %}
     </div>
         {{form.submit(class='btn btn-primary')}}
 </form>
