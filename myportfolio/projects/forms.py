@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, FloatField, DateField, SelectMultipleField
-from wtforms.validators import DataRequired
+from wtforms.fields import SubmitField, FloatField, DateField, SelectMultipleField
+from wtforms.validators import DataRequired, ValidationError
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import os
 import pandas as pd
 
@@ -17,8 +19,15 @@ class dash_form(FlaskForm):
     stocks = pd.read_csv(file_path)
     options = list(zip(stocks['Symbol'],stocks['Name']))
     
-    tickers = SelectMultipleField("Enter Stock Symbol",choices=options,default=['AAPL'])
-    start_date = DateField("Start Date")
-    end_date = DateField("End Date")
+    tickers = SelectMultipleField("Enter Stock Symbol",choices=options,
+                                  default=['GOOGL','AMZN','AAPL','MSFT'],
+                                  validators=[DataRequired()])
+    start_date = DateField("Start Date",default=datetime.today().date() - relativedelta(years=5),
+                           validators=[DataRequired()])
+    end_date = DateField("End Date",default=datetime.today().date(),
+                         validators=[DataRequired()])
     submit = SubmitField("Submit")
     
+    def validate_end_date(form, field):
+        if field.data < form.start_date.data:
+            raise ValidationError("End date must not be earlier than start date.")

@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
+import sklearn
 
 def iris_predict(flower_example):
     
@@ -25,12 +26,17 @@ def iris_predict(flower_example):
     
     return iris_class
 
-def create_plot(stocks):
+def create_plot(stocks,start,end):
     
     traces =[]
     
     for tic, df in stocks.items():
-        traces.append(go.Scatter(x=df.index,y=df['Adj Close'],mode='lines',name=tic))
+        if start not in df.index:
+            start = min(date for date in df.index if date>start)
+        if end not in df.index:
+            end = max(date for date in df.index if date<end)
+            
+        traces.append(go.Scatter(x=df.loc[start:end].index,y=df.loc[start:end]['Adj Close'],mode='lines',name=tic))
     
     layout = go.Layout(template='ggplot2')
     
@@ -40,11 +46,17 @@ def create_plot(stocks):
 
     return graphJSON
 
-def create_hist(stocks):
+def create_hist(stocks,start,end):
     
     fig = go.Figure()
     
     for tic, df in stocks.items():
+        if start not in df.index:
+            start = min(date for date in df.index if date>start)
+        if end not in df.index:
+            end = max(date for date in df.index if date<end)
+            
+        df['Daily Returns'] = df.loc[start:end]['Adj Close'].pct_change()
         fig.add_trace(go.Histogram(x=df['Daily Returns'],name=tic,
                                    xbins=dict(start=-0.2,end=0.2,size=0.005)))
     
@@ -55,12 +67,17 @@ def create_hist(stocks):
 
     return graphJSON
 
-def create_bar(stocks):
+def create_bar(stocks,start,end):
     
     data = []
     
     for tic, df in stocks.items():
-        pct_change = round(100*(df.loc['2023-01-03']['Adj Close']-df.loc['2021-01-04']['Adj Close'])/df.loc['2021-01-04']['Adj Close'],2)
+        if start not in df.index:
+            start = min(date for date in df.index if date>start)
+        if end not in df.index:
+            end = max(date for date in df.index if date<end)
+            
+        pct_change = round(100*(df.loc[end]['Adj Close']-df.loc[start]['Adj Close'])/df.loc[start]['Adj Close'],2)
         data.append([tic,pct_change])
     
     df = pd.DataFrame(data=data,columns=['Symbol','Pct Change'])
@@ -70,7 +87,7 @@ def create_bar(stocks):
     fig = go.Figure()
     
     fig.add_trace(go.Bar(x=df['Pct Change'],y=df['Symbol'],marker_color=df['Color'],orientation='h',
-                         text=df['Pct Change'],textposition='auto'))
+                         text=df['Pct Change'].apply(str)+'%',textposition='auto'))
     
     fig.update_layout(barmode='stack',template='ggplot2')
     

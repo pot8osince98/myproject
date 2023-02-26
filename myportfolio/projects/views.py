@@ -48,15 +48,17 @@ from myportfolio.projects.models import create_plot,create_hist,create_bar
 def stocks_dash():
     form = dash_form()
     tickers = form.tickers.data
+    start = form.start_date.data
+    end = form.end_date.data
+    
     stocks = {}
     
     for tic in tickers:
         df = yf.download(tic)
-        df['Daily Returns'] = df['Adj Close'].pct_change()
-        df.dropna(inplace=True)
         stocks[tic] = df
     
-    plot = create_plot(stocks)
-    hist = create_hist(stocks)
-    bar = create_bar(stocks)
+    plot = create_plot(stocks,start,end)
+    hist = create_hist(stocks,start,end)
+    bar = create_bar(stocks,start,end)
+        
     return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar)
