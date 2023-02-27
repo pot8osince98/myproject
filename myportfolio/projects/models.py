@@ -91,7 +91,7 @@ def create_bar(stocks,start,end):
     fig.add_trace(go.Bar(x=df['Pct Change'],y=df['Symbol'],marker_color=df['Color'],orientation='h',
                          text=df['Pct Change'].apply(str)+'%',textposition='auto'))
     
-    fig.update_layout(barmode='stack',template='ggplot2')
+    fig.update_layout(title="Percentage Change",barmode='stack',template='ggplot2')
     
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
