@@ -1,0 +1,92 @@
+{% extends "projects_base.html" %}
+
+{%  block title %}
+Stocks Dashboard
+{% endblock %}
+
+{% block blog %}
+
+<div id='chart' class='chart'>
+    <script type='text/javascript'>
+      var graphs = {{plot | safe}};
+      Plotly.plot('chart',graphs,{});
+    </script>
+</div>
+
+<div id='hist' class='chart'>
+    <script type='text/javascript'>
+      var graphs = {{hist | safe}};
+      Plotly.plot('hist',graphs,{});
+    </script>
+</div>
+
+<div id='bar' class='chart'>
+    <script type='text/javascript'>
+      var graphs = {{bar | safe}};
+      Plotly.plot('bar',graphs,{});
+    </script>
+</div>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+    {% for tic,data in ratios.items() %}
+    <div class="col mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center">{{tic}}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item my-1">
+                    <h6 class="card-text mb-1">Sharpe Ratio</h6>
+                    {{data[0]}}
+                </li>
+                <li class="list-group-item">
+                    <h6 class="card-text mb-1">Alpha</h6>
+                    {{data[1]}}
+                </li>
+                <li class="list-group-item">
+                    <h6 class="card-text mb-1">Beta</h6>
+                    {{data[2]}}
+                </li>
+            </ul>
+            <div class="card-footer text-muted">
+                <p>Alpha and Beta relative to S&P500</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block form %}
+<form method="POST">
+    {{form.hidden_tag()}}
+    <div class="mb-3">
+        {{form.tickers.label(class='form-label')}}
+        {{form.tickers(class='form-select')}}
+    </div>
+    <div class="mb-3">
+        {{form.start_date.label(class='form-label')}}
+        {{form.start_date(class='form-control')}}
+    </div>
+    <div class="mb-3">
+        {{form.end_date.label(class='form-label')}}
+        {{form.end_date(class='form-control')}}
+        {% if form.end_date.errors %}
+        <div class="text-danger">
+            {{ form.end_date.errors[0] }}
+        </div>
+        {% endif %}
+    </div>
+        {{form.submit(class='btn btn-primary')}}
+</form>
+
+<script>
+$(document).ready(function() {
+    $("#tickers").select2({
+        theme: "bootstrap-5"
+    });
+});
+</script>
+
+{% endblock %}

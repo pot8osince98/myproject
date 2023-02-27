@@ -1,6 +1,8 @@
 # myportfolio/projects/views.py
 
 from flask import render_template,url_for,request,redirect,Blueprint,flash,session
+import yfinance as yf
+import pandas as pd
 
 projects = Blueprint('projects',__name__)
 
@@ -39,3 +41,32 @@ def iris():
 @projects.route('/home_price_predictor')
 def home_price_predictor():
     return render_template('home_price_predictor.html')
+
+from myportfolio.projects.forms import dash_form
+from myportfolio.projects.models import create_plot,create_hist,create_bar,get_ratios
+
+@projects.route('/stocks_dash',methods=['GET','POST'])
+def stocks_dash():
+    form = dash_form()
+    tickers = form.tickers.data
+    start = form.start_date.data
+    start = pd.Timestamp(start)
+    
+    if not form.validate_on_submit():
+        form.end_date.data = form.end_date.default
+    
+    end = form.end_date.data
+    end = pd.Timestamp(end)
+    
+    stocks = {}
+    
+    for tic in tickers:
+        df = yf.download(tic)
+        stocks[tic] = df
+    
+    plot = create_plot(stocks,start,end)
+    hist = create_hist(stocks,start,end)
+    bar = create_bar(stocks,start,end)
+    ratios = get_ratios(stocks,start,end)
+        
+    return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar,ratios=ratios)
