@@ -43,7 +43,7 @@ def home_price_predictor():
     return render_template('home_price_predictor.html')
 
 from myportfolio.projects.forms import dash_form
-from myportfolio.projects.models import create_plot,create_hist,create_bar
+from myportfolio.projects.models import create_plot,create_hist,create_bar,get_ratios
 
 @projects.route('/stocks_dash',methods=['GET','POST'])
 def stocks_dash():
@@ -52,7 +52,7 @@ def stocks_dash():
     start = form.start_date.data
     start = pd.Timestamp(start)
     
-    if not form.validate():
+    if not form.validate_on_submit():
         form.end_date.data = form.end_date.default
     
     end = form.end_date.data
@@ -67,5 +67,6 @@ def stocks_dash():
     plot = create_plot(stocks,start,end)
     hist = create_hist(stocks,start,end)
     bar = create_bar(stocks,start,end)
+    ratios = get_ratios(stocks,start,end)
         
-    return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar)
+    return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar,ratios=ratios)

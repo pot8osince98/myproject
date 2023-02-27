@@ -27,6 +27,32 @@ Stocks Dashboard
     </script>
 </div>
 
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+    {% for tic,data in ratios.items() %}
+    <div class="col mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center">{{tic}}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item my-1">
+                    <h6 class="card-text mb-1">Sharpe Ratio</h6>
+                    {{data[0]}}
+                </li>
+                <li class="list-group-item">
+                    <h6 class="card-text mb-1">Alpha</h6>
+                    {{data[1]}}
+                </li>
+                <li class="list-group-item">
+                    <h6 class="card-text mb-1">Beta</h6>
+                    {{data[2]}}
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
 {% endblock %}
 
 {% block form %}

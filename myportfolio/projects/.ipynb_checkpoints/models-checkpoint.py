@@ -1,9 +1,11 @@
 import joblib,os,json,plotly
 import numpy as np
 import pandas as pd
+import yfinance as yf
 import plotly.express as px
 import plotly.graph_objs as go
 import sklearn
+from scipy.stats import linregress
 
 def iris_predict(flower_example):
     
@@ -94,3 +96,40 @@ def create_bar(stocks,start,end):
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     return graphJSON
+
+def get_ratios(stocks,start,end):
+    
+    ratios = {}
+    
+    sp500 = yf.download('SPY',start,end)
+    
+    sp500['Daily Returns'] = sp500['Adj Close'].pct_change()
+    
+    for tic, df in stocks.items():
+        if start not in df.index:
+            start = min(date for date in df.index if date>start)
+        if end not in df.index:
+            end = max(date for date in df.index if date<end)
+            
+        data = []
+        
+        mean = df.loc[start:end]['Daily Returns'].dropna().mean()
+        std = df.loc[start:end]['Daily Returns'].dropna().std()
+        
+        sharpe_ratio = (mean/std)*(252**0.5)
+        sharpe_ratio = '{:.2e}'.format(sharpe_ratio)
+        
+        data.append(sharpe_ratio)
+        
+        beta,alpha,_,_,_ = linregress(sp500['Daily Returns'].dropna(),
+                                      df['Daily Returns'].dropna())
+        
+        alpha = '{:.2e}'.format(alpha)
+        beta = '{:.2e}'.format(beta)
+        
+        data.append(alpha)
+        data.append(beta)
+        
+        ratios[tic] = data
+        
+    return ratios
