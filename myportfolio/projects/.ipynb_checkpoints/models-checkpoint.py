@@ -101,7 +101,7 @@ def get_ratios(stocks,start,end):
     
     ratios = {}
     
-    sp500 = yf.download('SPY',start,end)
+    sp500 = yf.download('SPY')
     
     sp500['Daily Returns'] = sp500['Adj Close'].pct_change()
     
@@ -121,8 +121,14 @@ def get_ratios(stocks,start,end):
         
         data.append(sharpe_ratio)
         
-        beta,alpha,_,_,_ = linregress(sp500['Daily Returns'].dropna(),
-                                      df['Daily Returns'].dropna())
+        start = max(start,sp500.index[0])
+        
+        if (start >= sp500.index[0]):
+            beta,alpha,_,_,_ = linregress(sp500.loc[start:end].iloc[1:]['Daily Returns'],
+                                          df['Daily Returns'].dropna())
+        else:
+            beta,alpha,_,_,_ = linregress(sp500['Daily Returns'].dropna(),
+                                          df.loc[start:end].iloc[1:]['Daily Returns'])
         
         alpha = '{:.2e}'.format(alpha)
         beta = '{:.2e}'.format(beta)
