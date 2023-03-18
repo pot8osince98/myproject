@@ -43,7 +43,8 @@ def home_price_predictor():
     return render_template('home_price_predictor.html')
 
 from myportfolio.projects.forms import dash_form
-from myportfolio.projects.models import create_plot,create_hist,create_bar,get_ratios
+from myportfolio.projects.models import (create_plot,create_hist,create_bar,get_ratios,
+                                         sim_monte_carlo,optimal_weights)
 
 @projects.route('/stocks_dash',methods=['GET','POST'])
 def stocks_dash():
@@ -68,5 +69,8 @@ def stocks_dash():
     hist = create_hist(stocks,start,end)
     bar = create_bar(stocks,start,end)
     ratios = get_ratios(stocks,start,end)
+    mc_sim = sim_monte_carlo(stocks)
+    opt_weights = optimal_weights()
         
-    return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar,ratios=ratios)
+    return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar,ratios=ratios,
+                           mc_sim=mc_sim,opt_weights=opt_weights)

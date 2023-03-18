@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 import sklearn
 from scipy.stats import linregress
+from scipy.optimize import minimize
 
 def iris_predict(flower_example):
     
@@ -101,7 +102,7 @@ def get_ratios(stocks,start,end):
     
     ratios = {}
     
-    sp500 = yf.download('SPY',start,end)
+    sp500 = yf.download('SPY')
     
     sp500['Daily Returns'] = sp500['Adj Close'].pct_change()
     
@@ -121,8 +122,14 @@ def get_ratios(stocks,start,end):
         
         data.append(sharpe_ratio)
         
-        beta,alpha,_,_,_ = linregress(sp500['Daily Returns'].dropna(),
-                                      df['Daily Returns'].dropna())
+        start = max(start,sp500.index[0])
+        
+        if (start >= sp500.index[0]):
+            beta,alpha,_,_,_ = linregress(sp500.loc[start:end].iloc[1:]['Daily Returns'],
+                                          df['Daily Returns'].dropna())
+        else:
+            beta,alpha,_,_,_ = linregress(sp500['Daily Returns'].dropna(),
+                                          df.loc[start:end].iloc[1:]['Daily Returns'])
         
         alpha = '{:.2e}'.format(alpha)
         beta = '{:.2e}'.format(beta)
@@ -133,3 +140,95 @@ def get_ratios(stocks,start,end):
         ratios[tic] = data
         
     return ratios
+
+log_returns = pd.DataFrame()
+
+log_returns_cov = pd.DataFrame()
+
+def calculate_returns(weights,log_rets):
+    
+    return np.sum(log_rets.mean()*weights) * 252
+
+def calculate_volatility(weights,log_rets_cov):
+    
+    annualized_cov = np.dot(log_rets_cov*252,weights)
+    vol = np.dot(weights.transpose(),annualized_cov)
+    
+    return vol**0.5
+
+def sim_monte_carlo(stocks):
+    global log_returns,log_returns_cov
+    
+    daily_rets = []
+    
+    for df in stocks.values():
+        daily_rets.append(df['Daily Returns'])
+    
+    daily_returns = pd.concat(daily_rets,axis=1)
+    daily_returns.columns = stocks.keys()
+    
+    log_returns = np.log(1+daily_returns.dropna())
+    log_returns_cov = log_returns.cov()
+    
+    N = len(log_returns.columns)
+    
+    def gen_weights(N):
+        weights = np.random.random(N)
+        return weights/np.sum(weights)
+    
+    mc_portfolio_returns = []
+    mc_portfolio_vol = []
+    mc_weights = []
+
+    for sim in range(10000):
+        weights = gen_weights(N)
+        mc_weights.append(weights)
+        sim_returns = calculate_returns(weights,log_returns)
+        mc_portfolio_returns.append(sim_returns)
+        sim_vol = calculate_volatility(weights,log_returns_cov)
+        mc_portfolio_vol.append(sim_vol)
+        
+    mc_sr = np.array(mc_portfolio_returns)/np.array(mc_portfolio_vol)
+    
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=mc_portfolio_vol,y=mc_portfolio_returns,
+                             mode='markers',marker=dict(color=mc_sr,
+                                                        colorscale='Plasma',
+                                                        showscale=True)))
+    fig.update_layout(title='Monte Carlo Simulation (10,000 samples)',
+                      template='ggplot2')
+    
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
+
+def optimal_weights():
+    
+    N = len(log_returns.columns)
+    equal_weights = np.array(N * [1/N])
+    
+    def func_to_minimize(weights):
+        return -1 * (calculate_returns(weights,log_returns)/
+                     calculate_volatility(weights,log_returns_cov))
+    
+    bounds = tuple((0,1) for n in range(N))
+    
+    sum_constraint = ({'type':'eq','fun':lambda weights: np.sum(weights)-1})
+    
+    opt_weight = minimize(fun=func_to_minimize,x0=equal_weights,
+                          bounds=bounds,constraints=sum_constraint).x
+    
+    opt_weight = np.round(opt_weight*100,2)
+    
+    fig = go.Figure()
+    
+    for i in range(len(opt_weight)):
+        fig.add_trace(go.Bar(x=[opt_weight[i]],name=log_returns.columns[i],
+                             text=str(opt_weight[i])+'%',textposition='auto'))
+    
+    fig.update_layout(title='Optimal Weights',barmode='stack',template='ggplot2',
+                      yaxis={'visible': False, 'showticklabels': False})
+    
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON

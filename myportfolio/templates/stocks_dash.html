@@ -6,10 +6,10 @@ Stocks Dashboard
 
 {% block blog %}
 
-<div id='chart' class='chart'>
+<div id='plot' class='chart'>
     <script type='text/javascript'>
       var graphs = {{plot | safe}};
-      Plotly.plot('chart',graphs,{});
+      Plotly.plot('plot',graphs,{});
     </script>
 </div>
 
@@ -54,6 +54,20 @@ Stocks Dashboard
         </div>
     </div>
     {% endfor %}
+</div>
+
+<div id='mc_sim' class='chart'>
+    <script type='text/javascript'>
+      var graphs = {{mc_sim | safe}};
+      Plotly.plot('mc_sim',graphs,{});
+    </script>
+</div>
+
+<div id='opt_weights' class='chart'>
+    <script type='text/javascript'>
+      var graphs = {{opt_weights | safe}};
+      Plotly.plot('opt_weights',graphs,{});
+    </script>
 </div>
 
 {% endblock %}
