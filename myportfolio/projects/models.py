@@ -29,15 +29,19 @@ def iris_predict(flower_example):
     
     return iris_class
 
-def create_plot(stocks,start,end):
+def create_plot(stocks,start_date,end_date):
     
     traces =[]
     
     for tic, df in stocks.items():
-        if start not in df.index:
-            start = min(date for date in df.index if date>start)
-        if end not in df.index:
-            end = max(date for date in df.index if date<end)
+        
+        start = start_date
+        end = end_date
+        
+        if start_date not in df.index:
+            start = min(date for date in df.index if date>start_date)
+        if end_date not in df.index:
+            end = max(date for date in df.index if date<end_date)
             
         traces.append(go.Scatter(x=df.loc[start:end].index,y=df.loc[start:end]['Adj Close'],mode='lines',name=tic))
     
@@ -49,15 +53,19 @@ def create_plot(stocks,start,end):
 
     return graphJSON
 
-def create_hist(stocks,start,end):
+def create_hist(stocks,start_date,end_date):
     
     fig = go.Figure()
     
     for tic, df in stocks.items():
-        if start not in df.index:
-            start = min(date for date in df.index if date>start)
-        if end not in df.index:
-            end = max(date for date in df.index if date<end)
+        
+        start = start_date
+        end = end_date
+        
+        if start_date not in df.index:
+            start = min(date for date in df.index if date>start_date)
+        if end_date not in df.index:
+            end = max(date for date in df.index if date<end_date)
             
         df['Daily Returns'] = df.loc[start:end]['Adj Close'].pct_change()
         fig.add_trace(go.Histogram(x=df['Daily Returns'],name=tic,
@@ -70,15 +78,19 @@ def create_hist(stocks,start,end):
 
     return graphJSON
 
-def create_bar(stocks,start,end):
+def create_bar(stocks,start_date,end_date):
     
     data = []
     
     for tic, df in stocks.items():
-        if start not in df.index:
-            start = min(date for date in df.index if date>start)
-        if end not in df.index:
-            end = max(date for date in df.index if date<end)
+                
+        start = start_date
+        end = end_date
+        
+        if start_date not in df.index:
+            start = min(date for date in df.index if date>start_date)
+        if end_date not in df.index:
+            end = max(date for date in df.index if date<end_date)
             
         pct_change = round(100*(df.loc[end]['Adj Close']-df.loc[start]['Adj Close'])/df.loc[start]['Adj Close'],2)
         data.append([tic,pct_change])
@@ -98,7 +110,7 @@ def create_bar(stocks,start,end):
 
     return graphJSON
 
-def get_ratios(stocks,start,end):
+def get_ratios(stocks,start_date,end_date):
     
     ratios = {}
     
@@ -107,10 +119,14 @@ def get_ratios(stocks,start,end):
     sp500['Daily Returns'] = sp500['Adj Close'].pct_change()
     
     for tic, df in stocks.items():
-        if start not in df.index:
-            start = min(date for date in df.index if date>start)
-        if end not in df.index:
-            end = max(date for date in df.index if date<end)
+        
+        start = start_date
+        end = end_date
+    
+        if start_date not in df.index:
+            start = min(date for date in df.index if date>start_date)
+        if end_date not in df.index:
+            end = max(date for date in df.index if date<end_date)
             
         data = []
         
@@ -124,7 +140,7 @@ def get_ratios(stocks,start,end):
         
         start = max(start,sp500.index[0])
         
-        if (start >= sp500.index[0]):
+        if (start > sp500.index[0]):
             beta,alpha,_,_,_ = linregress(sp500.loc[start:end].iloc[1:]['Daily Returns'],
                                           df['Daily Returns'].dropna())
         else:
