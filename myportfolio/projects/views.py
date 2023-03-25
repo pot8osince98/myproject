@@ -74,3 +74,7 @@ def stocks_dash():
         
     return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar,ratios=ratios,
                            mc_sim=mc_sim,opt_weights=opt_weights)
+
+@projects.route('/tableau_dashboard',methods=['GET','POST'])
+def tableau_dashboard():
+    return render_template('tableau_dashboard.html')
