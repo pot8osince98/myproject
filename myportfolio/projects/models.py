@@ -43,7 +43,7 @@ def create_plot(stocks,start_date,end_date):
         if end_date not in df.index:
             end = max(date for date in df.index if date<end_date)
             
-        traces.append(go.Scatter(x=df.loc[start:end].index,y=df.loc[start:end]['Adj Close'],mode='lines',name=tic))
+        traces.append(go.Scatter(x=df.loc[start:end].index,y=df.loc[start:end]['Close'],mode='lines',name=tic))
     
     layout = go.Layout(template='ggplot2')
     
@@ -67,7 +67,7 @@ def create_hist(stocks,start_date,end_date):
         if end_date not in df.index:
             end = max(date for date in df.index if date<end_date)
             
-        df['Daily Returns'] = df.loc[start:end]['Adj Close'].pct_change()
+        df['Daily Returns'] = df.loc[start:end]['Close'].pct_change()
         fig.add_trace(go.Histogram(x=df['Daily Returns'],name=tic,
                                    xbins=dict(start=-0.2,end=0.2,size=0.005)))
     
@@ -92,7 +92,7 @@ def create_bar(stocks,start_date,end_date):
         if end_date not in df.index:
             end = max(date for date in df.index if date<end_date)
             
-        pct_change = round(100*(df.loc[end]['Adj Close']-df.loc[start]['Adj Close'])/df.loc[start]['Adj Close'],2)
+        pct_change = round(100*(df.loc[end]['Close']-df.loc[start]['Close'])/df.loc[start]['Close'],2)
         data.append([tic,pct_change])
     
     df = pd.DataFrame(data=data,columns=['Symbol','Pct Change'])
@@ -116,7 +116,7 @@ def get_ratios(stocks,start_date,end_date):
     
     sp500 = yf.download('SPY')
     
-    sp500['Daily Returns'] = sp500['Adj Close'].pct_change()
+    sp500['Daily Returns'] = sp500['Close'].pct_change()
     
     for tic, df in stocks.items():
         
