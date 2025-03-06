@@ -63,6 +63,7 @@ def stocks_dash():
     
     for tic in tickers:
         df = yf.download(tic)
+        df.columns = df.column.droplevel(1)
         stocks[tic] = df
     
     plot = create_plot(stocks,start,end)
