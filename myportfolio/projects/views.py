@@ -25,15 +25,15 @@ def iris():
         session['sep_wid'] = form.sep_wid.data
         session['pet_len'] = form.pet_len.data
         session['pet_wid'] = form.pet_wid.data
-        
+
         flower = {}
         flower['sep_len'] = float(session['sep_len'])
         flower['sep_wid'] = float(session['sep_wid'])
         flower['pet_len'] = float(session['pet_len'])
         flower['pet_wid'] = float(session['pet_wid'])
-        
+
         iris_class = iris_predict(flower)
-        
+
         flash(iris_class)
         return redirect(url_for('projects.iris'))
     return render_template('iris.html',form=form)
@@ -52,27 +52,27 @@ def stocks_dash():
     tickers = form.tickers.data
     start = form.start_date.data
     start = pd.Timestamp(start)
-    
+
     if not form.validate_on_submit():
         form.end_date.data = form.end_date.default
-    
+
     end = form.end_date.data
     end = pd.Timestamp(end)
-    
+
     stocks = {}
-    
+
     for tic in tickers:
         df = yf.download(tic)
-        df.columns = df.column.droplevel(1)
+        df.columns = df.columns.droplevel(1)
         stocks[tic] = df
-    
+
     plot = create_plot(stocks,start,end)
     hist = create_hist(stocks,start,end)
     bar = create_bar(stocks,start,end)
     ratios = get_ratios(stocks,start,end)
     mc_sim = sim_monte_carlo(stocks)
     opt_weights = optimal_weights()
-        
+
     return render_template('stocks_dash.html',plot=plot,form=form,hist=hist,bar=bar,ratios=ratios,
                            mc_sim=mc_sim,opt_weights=opt_weights)
 
